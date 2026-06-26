@@ -72,6 +72,11 @@ class TestArticlesView:
                 "identifier": "alex@example.com",
             },
         )
+        
+    def test_no_errors_by_default(self, client: Client) -> None:
+        self._lookup(client)
+        response = client.get("/returns/RMA-1001/articles/")
+        assert b"\"alert-error" not in response.content
 
     def test_unauthenticated_redirects(self, client: Client) -> None:
         response = client.get("/returns/RMA-1001/articles/")
@@ -106,8 +111,3 @@ class TestArticlesView:
         response = client.get("/returns/RMA-1001/articles/")
 
         assert b"Some error." not in response.content
-
-    def test_no_errors_by_default(self, client: Client) -> None:
-        self._lookup(client)
-        response = client.get("/returns/RMA-1001/articles/")
-        assert b"alert-error" not in response.content

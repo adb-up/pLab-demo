@@ -1,0 +1,86 @@
+{
+  "merchant_id": "merchant_123",
+
+  "eligibility_block": [
+    {
+        "id": "merchant_123:block:hygiene",
+        "match": { "category": "hygiene" },
+        "reason": "merchant_policy_final_sale"
+    },
+    {
+        "id": "merchant_123:block:gift_cards",
+        "match": { "category": "gift_cards" },
+        "reason": "merchant_policy_non_returnable"
+    },
+    {
+        "id": "legal:DE:block:custom_made",
+        "match": { "countries": ["DE"], "category": "custom_made" },
+        "reason": "legal_exemption",
+        "source": "BGB §312g"
+    }
+  ],
+
+  "base_window": [
+    {
+        "id": "merchant_123:default",
+        "match": {},
+        "return_window_days": 30,
+        "send_window_days": 14
+    },
+    {
+        "id": "merchant_123:country:DE",
+        "match": { "countries": ["DE"] },
+        "return_window_days": 21,
+        "send_window_days": 14
+    },
+    {
+        "id": "merchant_123:category:electronics",
+        "match": { "category": "electronics" },
+        "return_window_days": 14,
+        "send_window_days": 7
+    },
+    {
+        "id": "merchant_123:country_category:DE:electronics",
+        "match": { "countries": ["DE"], "category": "electronics" },
+        "return_window_days": 10,
+        "send_window_days": 7
+    }
+  ],
+
+  "legal_base": [
+    {
+        "id": "default",
+        "match": {},
+        "return_window_min_days": 0,
+        "anchor_event": "delivery_date",
+        "anchor_offset_days": 0
+    },
+    {
+        "id": "legal:UK:base",
+        "match": { "countries": ["UK"] },
+        "return_window_min_days": 14,
+        "anchor_event": "delivery_date",
+        "anchor_offset_days": 0
+    },
+    {
+        "id": "legal:EU:base",
+        "match": { "countries": ["DE", "FR", "IT", "ES", "NL", "RO", "BE"] },
+        "return_window_min_days": 14,
+        "anchor_event": "delivery_date",
+        "anchor_offset_days": 0
+    }
+  ],
+
+  "loyalty_tiers": [
+    {
+        "id": "merchant_123:tier:gold",
+        "match": { "tier": "gold" },
+        "return_window_days": 60
+    },
+    {
+        "id": "merchant_123:tier:silver",
+        "match": { "tier": "silver" },
+        "return_window_days": 45
+    }
+  ]
+}

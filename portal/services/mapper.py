@@ -5,7 +5,13 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
-from portal.types import Article, Order
+from portal.types import (
+    Article,
+    EligibilityRule,
+    EligibilityRuleBlock,
+    EligibilityRuleLegal,
+    Order,
+)
 
 
 def _parse_dt(value: str) -> datetime:
@@ -125,4 +131,35 @@ def map_order(raw: dict[str, Any]) -> Order:
         order_date=order_date,
         delivery_date=delivery_date or order_date,
         articles=articles,
+    )
+
+
+def map_block_rule(raw: dict[str, Any]) -> EligibilityRuleBlock:
+    return EligibilityRuleBlock(
+        id=raw["id"],
+        reason=raw["reason"],
+        source=raw.get("source", ""),
+        match=raw.get("match", {}),
+    )
+
+
+def map_eligibility_rule(raw: dict[str, Any]) -> EligibilityRule:
+    return EligibilityRule(
+        id=raw["id"],
+        anchor_event=raw.get("anchor_event", "delivery_date"),
+        anchor_event_offset_days=raw.get("anchor_event_offset_days", 0),
+        return_window_days=raw.get("return_window_days", 0),
+        send_window_days=raw.get("send_window_days", 0),
+        loyalty_tier=raw.get("loyalty_tier"),
+        match=raw.get("match", {}),
+    )
+
+
+def map_legal_rule(raw: dict[str, Any]) -> EligibilityRuleLegal:
+    return EligibilityRuleLegal(
+        id=raw["id"],
+        return_window_min_days=raw.get("return_window_min_days", 0),
+        anchor_event=raw.get("anchor_event", "delivery_date"),
+        anchor_offset_days=raw.get("anchor_offset_days", 0),
+        match=raw.get("match", {}),
     )

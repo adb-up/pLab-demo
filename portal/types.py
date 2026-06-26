@@ -52,3 +52,57 @@ class ArticleEligibility:
     returnable: bool
     reason: str  # human-readable explanation (empty string when returnable)
     matched_rule: str  # identifier of the rule that matched (empty when returnable)
+    
+@dataclass
+class EligibilityRuleBlock:
+    """A single rule for determining return eligibility."""
+
+    id: str
+    reason: str
+    source: str = ""
+    match: dict[str, str] = field(default_factory=dict)
+
+@dataclass
+class EligibilityRule:
+    """A single rule for determining return eligibility."""
+
+    id: str
+    anchor_event: str
+    anchor_event_offset_days: int
+    return_window_days: int
+    send_window_days: int
+    loyalty_tier: str | None = None
+    match: dict[str, str] = field(default_factory=dict)
+
+@dataclass
+class EligibilityRuleLegal:
+    id: str
+    return_window_min_days: int
+    anchor_event: str
+    anchor_offset_days: int
+    match: dict[str, str] = field(default_factory=dict)
+
+@dataclass
+class EligibilityRuleLoyaltyTier:
+    id: str
+    loyalty_tier: str
+    return_window_days: int
+    anchor_event: str
+    anchor_offset_days: int
+    match: dict[str, str] = field(default_factory=dict)
+
+@dataclass
+class EligibilityResult:
+    eligible: bool
+    resolved_return_window_days: int
+    resolved_deadline: datetime
+    applied_rules: list[str] = field(default_factory=list)
+    final_rule_id: str = ""
+
+@dataclass
+class EligibilityRules:
+    block: list[EligibilityRuleBlock] = field(default_factory=list)
+    allow: list[EligibilityRule] = field(default_factory=list)
+    legal: list[EligibilityRuleLegal] = field(default_factory=list)
+    loyalty_tiers: list[EligibilityRule] = field(default_factory=list)
+    
