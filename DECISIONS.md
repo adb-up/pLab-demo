@@ -47,3 +47,32 @@ Return cost handled by the merchant or by the user? Would this depend on the Loy
 
 - Decision: Next issue handled is FR-001, looks like a fast win and it will be great to have the overall feedback of the UX at once. 
 TODO: check (before the actual implementation) the KPI related to this feature, and what should be tracked and measured.
+
+
+
+
+
+- Eligibility:
+
+I've assumed that the categories provided with the orders are already mapped to some meta categories provided by parcelLab.
+Based on this I was thinking to have 2 types of rules:
+1. default rules that are controlled via OPS / are univerally available for all merchants
+2. custom rules that the merchants can set based on: country, category, loyalty tiers
+
+Maybe I got a bit too complicated with all the rules and regulations.
+I had the idea to handle the following cases, in this specific order:
+1. rules that block return by default - customization, perisable, opened consumables
+2. rules that allow returns by default - a minimum period, based on country
+3. merchant level customization - loaded via an api or local admin
+4. loyalty tier - available just for the merchants that offer this
+5. custom rules: for example high return rate. Although I dont think that it has a legal basis, and I've changed my mind with this one - maybe it's better handled at purchase event.
+
+I've added some template rules in data/eligibility_rules_raw.json
+
+The branch is not merged as I don't feel that is something that I will deploy
+I still have to add tests and review the rules, and review that code a bit more.
+
+I wanted to provide this also, as it was work in progress.
+
+
+
