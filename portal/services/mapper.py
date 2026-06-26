@@ -48,6 +48,15 @@ def _as_float(value: object, default: float = 0.0) -> float:
         return float(value)
     return default
 
+def _as_bool(value: object, default: bool = False) -> bool:
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)):
+        return bool(value)
+    if isinstance(value, str):
+        return value.lower() in ("true", "1")
+    return default
+
 
 def map_order(raw: dict[str, Any]) -> Order:
     """Map a raw order dict (from ``orders_raw.json``) to an :class:`Order`.
@@ -85,9 +94,9 @@ def map_order(raw: dict[str, Any]) -> Order:
                 quantity=_as_int(item.get("quantity"), default=1),
                 quantity_returned=_as_int(item.get("quantity_returned"), default=0),
                 price=_as_float(item.get("price")),
-                is_digital=False,
-                is_final_sale=False,
-                category="",
+                is_digital=_as_bool(item.get("digital")),
+                is_final_sale=_as_bool(item.get("final_sale")),
+                category=_as_str(item.get("category")),
             )
         )
 
