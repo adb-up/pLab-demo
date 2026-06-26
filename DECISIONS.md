@@ -47,3 +47,26 @@ Return cost handled by the merchant or by the user? Would this depend on the Loy
 
 - Decision: Next issue handled is FR-001, looks like a fast win and it will be great to have the overall feedback of the UX at once. 
 TODO: check (before the actual implementation) the KPI related to this feature, and what should be tracked and measured.
+
+
+
+
+For eligibility I've left unmerged code in branch BR-002, as still needs some work (it works, but I didn't had time to add tests and is enough to not be ready).
+
+
+I thought before on what I would add in addition to the specified requirements, and I belive that the next feature is interesting:
+
+- at article level, when returning, add a list of possible reasons of the return, and based on the said reason, recommend an action on the confirmation page - as an alternative to the refund.
+
+For example:
+- replace article, in case of damages
+- replace article with a different variant, in case of wrong size, or color
+- upsale with a one time offer % cost reduction - based on the item, configured by the merchant.
+- review of the product / experience - this would go to the customer support, as opportunity for future interaction to improve the relation with the customer. If they write a review, they care more than most people.
+
+
+Most definetly I've skipped over things - the heat is not helping :)
+
+Looking forward to hear back from you
+
+Alexandru
