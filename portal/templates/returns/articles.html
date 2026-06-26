@@ -16,10 +16,32 @@
 
     <form
         id="return-selection-form"
-        x-data="{ selected: {}, hasSelection() { return Object.values(this.selected).some(Boolean); } }"
+        method="post"
+        action="{% url 'confirm' order_number=order.order_number %}"
+        x-data="{
+            selected: {},
+            quantities: {},
+            hasSelection() { return Object.values(this.selected).some(Boolean); },
+            submitReturn() {
+                console.log('Submitting return with selected items:', this.selected, 'and quantities:', this.quantities);
+                const items = {};
+                for (const [key, checked] of Object.entries(this.selected)) {
+                    if (!checked) continue;
+                    const id = key.replace('_', '-');
+                    const sku = document.getElementById(id).closest('.article-card').dataset.sku;
+                    items[sku] = this.quantities[key];
+                }
+                this.$refs.payload.value = JSON.stringify(items);
+                this.$el.submit();
+            }
+        }"
+        @submit.prevent="submitReturn()"
     >
+        {% csrf_token %}
+        <input type="hidden" name="items" x-ref="payload">
+        
         {% for row in article_rows %}
-            <div class="article-card{% if not row.selectable %} article-card-muted{% endif %}">
+            <div class="article-card{% if not row.selectable %} article-card-muted{% endif %}" data-sku="{{ row.result.article.sku }}">
                 <div class="article-selector">
                     <input
                         type="checkbox"
@@ -27,6 +49,19 @@
                         class="item-checkbox"
                         {% if row.selectable %}
                             x-model="selected['item_{{ forloop.counter }}']"
+                            @change="
+                                if (selected['item_{{ forloop.counter }}']) {
+                                    quantities['item_{{ forloop.counter }}'] = 1 
+                                } else { 
+                                    delete quantities['item_{{ forloop.counter }}']
+                                }
+                            "
+                            {% if row.preserved_qty %}
+                                x-init="
+                                    selected['item_{{ forloop.counter }}'] = true;
+                                    {% if row.error %}{ quantities['item_{{ forloop.counter }}'] = {{ row.preserved_qty }} }{% endif %}
+                                    "
+                            {% endif %}
                         {% else %}
                             disabled
                         {% endif %}
@@ -44,7 +79,9 @@
                             ({{ row.result.article.quantity_returned }} returned)
                         {% endif %}
                     </div>
-                    {% if not row.selectable %}
+                    {% if row.error %}
+                        <div class="alert alert-error mt-1">{{ row.error }}</div>
+                    {% elif not row.selectable %}
                         <div class="help-text mt-1">
                             {% if not row.result.returnable and row.result.reason %}
                                 {{ row.result.reason }}
@@ -62,6 +99,7 @@
                         class="qty-select"
                         {% if row.selectable %}
                             :disabled="!selected['item_{{ forloop.counter }}']"
+                            x-model.number="quantities['item_{{ forloop.counter }}']"
                         {% else %}
                             disabled
                         {% endif %}
@@ -80,10 +118,9 @@
             <a href="{% url 'lookup' %}" class="btn btn-secondary">&larr; Back to lookup</a>
             <button
                 id="continue-btn"
-                type="button"
+                type="submit"
                 class="btn btn-primary continue-btn"
                 :disabled="!hasSelection()"
-                disabled
             >
                 Continue
             </button>

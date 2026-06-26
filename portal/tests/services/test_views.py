@@ -64,12 +64,7 @@ class TestLookupView:
 
 
 class TestArticlesView:
-    def test_unauthenticated_redirects(self, client: Client) -> None:
-        response = client.get("/returns/RMA-1001/articles/")
-        assert response.status_code == 302
-
-    def test_authenticated_shows_articles(self, client: Client) -> None:
-        # Log in first
+    def _lookup(self, client: Client) -> None:
         client.post(
             "/returns/",
             {
@@ -77,6 +72,42 @@ class TestArticlesView:
                 "identifier": "alex@example.com",
             },
         )
+
+    def test_unauthenticated_redirects(self, client: Client) -> None:
+        response = client.get("/returns/RMA-1001/articles/")
+        assert response.status_code == 302
+
+    def test_authenticated_shows_articles(self, client: Client) -> None:
+        self._lookup(client)
         response = client.get("/returns/RMA-1001/articles/")
         assert response.status_code == 200
         assert b"TSHIRT-BLK-M" in response.content
+
+    def test_sku_errors_displayed_after_invalid_submission(self, client: Client) -> None:
+        self._lookup(client)
+        session = client.session
+        session["sku_errors"] = {"TSHIRT-BLK-M": "Cannot return 5 — only 1 available."}
+        session["preserved_items"] = '{"TSHIRT-BLK-M": 5}'
+        session.save()
+
+        response = client.get("/returns/RMA-1001/articles/")
+
+        assert response.status_code == 200
+        assert b"Cannot return 5" in response.content
+
+    def test_sku_errors_cleared_after_display(self, client: Client) -> None:
+        self._lookup(client)
+        session = client.session
+        session["sku_errors"] = {"TSHIRT-BLK-M": "Some error."}
+        session["preserved_items"] = '{"TSHIRT-BLK-M": 1}'
+        session.save()
+
+        client.get("/returns/RMA-1001/articles/")
+        response = client.get("/returns/RMA-1001/articles/")
+
+        assert b"Some error." not in response.content
+
+    def test_no_errors_by_default(self, client: Client) -> None:
+        self._lookup(client)
+        response = client.get("/returns/RMA-1001/articles/")
+        assert b"alert-error" not in response.content

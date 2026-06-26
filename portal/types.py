@@ -35,6 +35,14 @@ class Order:
     delivery_date: datetime
     articles: list[Article] = field(default_factory=list)
 
+@dataclass(frozen=True)
+class ReturnItem:
+    """A validated article selected for return."""
+
+    sku: str
+    name: str
+    qty: int
+    price: float
 
 @dataclass
 class ArticleEligibility:
