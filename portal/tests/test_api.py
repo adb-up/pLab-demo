@@ -72,3 +72,21 @@ class TestReturnsApiViewSet:
         assert second["article"]["sku"] == "EBOOK-RETURNS"
         assert second["returnable"] is False
         assert second["selectable"] is False
+
+
+    def test_articles_with_mismatched_session_returns_403(self) -> None:
+        client = APIClient()
+        lookup_response = client.post(
+            "/api/returns/lookup/",
+            {
+                "order_number": "RMA-1001",
+                "identifier": "alex@example.com",
+            },
+            format="json",
+        )
+        assert lookup_response.status_code == 200
+
+        # Simulate a mismatched session by manually setting a different order number
+        response = client.get("/api/returns/RMA-1002/articles/")
+
+        assert response.status_code == 403

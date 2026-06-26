@@ -113,6 +113,12 @@ class ReturnsViewSet(viewsets.ViewSet):
                 {"detail": "Order not found."},
                 status=status.HTTP_404_NOT_FOUND,
             )
+        
+        if request.session.get("order_number") != order.order_number:
+            return Response(
+                {"detail": "Requested order does not match the previously looked-up order."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
 
         results = evaluate_eligibility(order)
         payload = {
