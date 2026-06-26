@@ -44,8 +44,9 @@
             <label class="filter-toggle">
                 <input
                     type="checkbox"
-                    name="returnable_only"
+                    {% if returnable_only %}checked{% endif %}
                     hx-get="{% url 'articles' order_number=order.order_number %}"
+                    hx-vals='js:{"returnable_only": event.target.checked ? "true" : "false"}'
                     hx-target="#article-list"
                     hx-swap="innerHTML"
                 >

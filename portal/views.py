@@ -50,8 +50,15 @@ class ArticlesView(View):
 
         results = evaluate_eligibility(order)
         article_rows = []
+        
+        if request.GET.get("returnable_only") == "true":
+            request.session["returnable_only"] = True
+        elif request.GET.get("returnable_only") == "false":
+            request.session["returnable_only"] = False
+            
+
         for result in results:
-            if request.GET.get("returnable_only") and not result.returnable:
+            if request.session.get("returnable_only", False) and not result.returnable:
                 continue
             
             remaining_qty = max(
@@ -86,6 +93,7 @@ class ArticlesView(View):
                 "order": order,
                 "results": results,
                 "article_rows": article_rows,
+                "returnable_only": request.session.get("returnable_only", False),
             },
         )
 
@@ -158,6 +166,10 @@ class SuccessView(View):
 
         request.session.pop("sku_errors", None)
         request.session.pop("preserved_items", None)
+        
+        # TODO: cleanup order data and user information from session
+        # TODO: keep returnable_only as session data or clear it after success? For now, we clear it.
+        request.session.pop("returnable_only", None)
 
         # TODO: Display real follow up instructions based on the return process.
         # Clean up session data and show a success message.
