@@ -43,3 +43,7 @@ TODOs left:
 For the above I would need more information about the delivery vendors setup.
 It would be interesting if there is an option to automatically select specific vendors based on the weight of the package (for example).
 Return cost handled by the merchant or by the user? Would this depend on the Loyality Tier?
+
+
+- Decision: Next issue handled is FR-001, looks like a fast win and it will be great to have the overall feedback of the UX at once. 
+TODO: check (before the actual implementation) the KPI related to this feature, and what should be tracked and measured.

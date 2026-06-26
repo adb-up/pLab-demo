@@ -14,7 +14,7 @@ def evaluate_eligibility(order: Order) -> list[ArticleEligibility]:
     return [
         ArticleEligibility(
             article=article,
-            returnable=True,
+            returnable=not article.is_final_sale and not article.is_digital,
             reason="",
             matched_rule="",
         )

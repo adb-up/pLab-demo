@@ -51,6 +51,9 @@ class ArticlesView(View):
         results = evaluate_eligibility(order)
         article_rows = []
         for result in results:
+            if request.GET.get("returnable_only") and not result.returnable:
+                continue
+            
             remaining_qty = max(
                 result.article.quantity - result.article.quantity_returned,
                 0,
@@ -67,6 +70,13 @@ class ArticlesView(View):
                     "error": sku_errors.get(result.article.sku),
                     "preserved_qty": preserved_qty,
                 }
+            )
+            
+        if request.headers.get("HX-Request"):
+            return render(
+                request,
+                "returns/_article_list.html",
+                {"article_rows": article_rows},
             )
 
         return render(

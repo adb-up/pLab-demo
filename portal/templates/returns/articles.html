@@ -39,80 +39,23 @@
     >
         {% csrf_token %}
         <input type="hidden" name="items" x-ref="payload">
+
+        <div class="filter-bar">
+            <label class="filter-toggle">
+                <input
+                    type="checkbox"
+                    name="returnable_only"
+                    hx-get="{% url 'articles' order_number=order.order_number %}"
+                    hx-target="#article-list"
+                    hx-swap="innerHTML"
+                >
+                Show returnable only
+            </label>
+        </div>
         
-        {% for row in article_rows %}
-            <div class="article-card{% if not row.selectable %} article-card-muted{% endif %}" data-sku="{{ row.result.article.sku }}">
-                <div class="article-selector">
-                    <input
-                        type="checkbox"
-                        id="item-{{ forloop.counter }}"
-                        class="item-checkbox"
-                        {% if row.selectable %}
-                            x-model="selected['item_{{ forloop.counter }}']"
-                            @change="
-                                if (selected['item_{{ forloop.counter }}']) {
-                                    quantities['item_{{ forloop.counter }}'] = 1 
-                                } else { 
-                                    delete quantities['item_{{ forloop.counter }}']
-                                }
-                            "
-                            {% if row.preserved_qty %}
-                                x-init="
-                                    selected['item_{{ forloop.counter }}'] = true;
-                                    {% if row.error %}{ quantities['item_{{ forloop.counter }}'] = {{ row.preserved_qty }} }{% endif %}
-                                    "
-                            {% endif %}
-                        {% else %}
-                            disabled
-                        {% endif %}
-                    >
-                </div>
-
-                <div class="article-info">
-                    <label for="item-{{ forloop.counter }}" class="article-name article-name-label">
-                        {{ row.result.article.name }}
-                    </label>
-                    <div class="article-meta">
-                        SKU: {{ row.result.article.sku }}
-                        &middot; Qty: {{ row.result.article.quantity }}
-                        {% if row.result.article.quantity_returned > 0 %}
-                            ({{ row.result.article.quantity_returned }} returned)
-                        {% endif %}
-                    </div>
-                    {% if row.error %}
-                        <div class="alert alert-error mt-1">{{ row.error }}</div>
-                    {% elif not row.selectable %}
-                        <div class="help-text mt-1">
-                            {% if not row.result.returnable and row.result.reason %}
-                                {{ row.result.reason }}
-                            {% else %}
-                                Not selectable for return.
-                            {% endif %}
-                        </div>
-                    {% endif %}
-                </div>
-
-                <div class="article-actions">
-                    <label for="qty-{{ forloop.counter }}" class="qty-label">Return qty</label>
-                    <select
-                        id="qty-{{ forloop.counter }}"
-                        class="qty-select"
-                        {% if row.selectable %}
-                            :disabled="!selected['item_{{ forloop.counter }}']"
-                            x-model.number="quantities['item_{{ forloop.counter }}']"
-                        {% else %}
-                            disabled
-                        {% endif %}
-                    >
-                        {% for qty in row.quantity_options %}
-                            <option value="{{ qty }}">{{ qty }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <div class="article-price">&euro;{{ row.result.article.price }}</div>
-            </div>
-        {% endfor %}
+        <div id="article-list">
+            {% include "returns/_article_list.html" %}
+        </div>
 
         <div class="selection-actions mt-2">
             <a href="{% url 'lookup' %}" class="btn btn-secondary">&larr; Back to lookup</a>
