@@ -70,3 +70,10 @@ Most definetly I've skipped over things - the heat is not helping :)
 Looking forward to hear back from you
 
 Alexandru
+
+
+Hello again,
+
+I know that is outside the test window, but it bugged me over the weekend
+Added Final Sale support in BR-002
+Added local update of the raw file for usability test ( restart the process for same order ) 
