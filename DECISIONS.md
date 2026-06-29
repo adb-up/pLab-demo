@@ -76,3 +76,7 @@ I wanted to provide this also, as it was work in progress.
 
 
 
+Hello again
+
+I've added support for Final Sale, even if it is outside of the challenge time, it bugged me over the weekend :)
+
