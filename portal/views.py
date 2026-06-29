@@ -6,7 +6,7 @@ from django.views import View
 
 from portal.forms import LookupForm, ReturnForm
 from portal.services.eligibility import evaluate_eligibility
-from portal.services.order_store import find_order, get_order
+from portal.services.order_store import find_order, get_order, update_returned_quantities
 
 
 class LookupView(View):
@@ -151,8 +151,8 @@ class SubmitView(View):
             request.session["preserved_items"] = request.POST.get("items", "{}")
             return redirect("articles", order_number=order_number)
         
-        # TODO: Here you would typically process the return submission, e.g.,
-        # save it to the database, send confirmation emails, etc.
+        # TODO: add a service layer for orders, the views should work with the service layer, not directly with the data store.
+        update_returned_quantities(order_number, form.cleaned_data["items"])
 
         return redirect("success", order_number=order_number)
 

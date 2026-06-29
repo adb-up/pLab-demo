@@ -1,3 +1,6 @@
+{% if not article_rows %}
+    <div class="alert alert-info">No articles available for return.</div>
+{% endif %}
 {% for row in article_rows %}
     <div class="article-card{% if not row.selectable %} article-card-muted{% endif %}" data-sku="{{ row.result.article.sku }}">
         <div class="article-selector">

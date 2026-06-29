@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Any, cast
 
 from portal.services.mapper import map_order
-from portal.types import Order
+from portal.types import Order, ReturnItem
 
 _DATA_PATH = Path(__file__).resolve().parent.parent / "data" / "orders_raw.json"
 
@@ -79,3 +79,24 @@ def get_order(order_number: str) -> Order | None:
         if raw["order_number"] == order_number:
             return _freshen_dates(map_order(raw))
     return None
+
+
+def update_returned_quantities(order_number: str, items: list[ReturnItem]) -> None:
+    """Increment quantity_returned for each article in the return submission."""
+    with _DATA_PATH.open() as f:
+        data = json.load(f)
+
+    qty_by_sku = {item.sku: item.qty for item in items}
+
+    for order in data["orders"]:
+        if order["order_number"] != order_number:
+            continue
+        for article in order.get("articles", []):
+            delta = qty_by_sku.get(article["sku"], 0)
+            if delta:
+                article["quantity_returned"] = article.get("quantity_returned", 0) + delta
+        break
+
+    with _DATA_PATH.open("w") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+        f.write("\n")
