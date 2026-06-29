@@ -10,7 +10,7 @@ import json
 from pathlib import Path
 from typing import Any, cast
 
-from portal.services.mapper import map_block_rule, map_eligibility_rule, map_legal_rule
+from portal.services.mapper import map_block_rule, map_eligibility_rule, map_final_sale_rule, map_legal_rule
 from portal.types import EligibilityRules
 
 _DATA_PATH = Path(__file__).resolve().parent.parent / "data" / "eligibility_rules_raw.json"
@@ -26,9 +26,13 @@ def _load_raw() -> dict[str, Any]:
 
 def get_rules() -> EligibilityRules:
     raw = _load_raw()
+    final_sale_raw = raw.get("final_sale")
+    final_sale = map_final_sale_rule(final_sale_raw) if final_sale_raw else None
+
     return EligibilityRules(
         block=[map_block_rule(r) for r in raw.get("eligibility_block", [])],
         allow=[map_eligibility_rule(r) for r in raw.get("base_window", [])],
         legal=[map_legal_rule(r) for r in raw.get("legal_base", [])],
         loyalty_tiers=[map_eligibility_rule(r) for r in raw.get("loyalty_tiers", [])],
+        final_sale=final_sale,
     )

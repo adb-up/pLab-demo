@@ -14,6 +14,7 @@ from portal.types import (
     EligibilityRuleBlock,
     EligibilityRuleLegal,
     EligibilityRules,
+    FinalSaleRule,
     Order,
 )
 
@@ -56,6 +57,7 @@ def best_match(rules: list[T], context: dict[str, Any]) -> T | None:
 def resolve_eligibility(article: Article, order: Order, rules: EligibilityRules) -> EligibilityResult:
     context: dict[str, Any] = {
         "category": article.category,
+        "country": order.country_code,
         "delivery_date": order.delivery_date,
         "order_date": order.order_date,
     }
@@ -128,15 +130,19 @@ def evaluate_eligibility(order: Order) -> list[ArticleEligibility]:
             ))
             continue
 
-        # TODO: check if final_sale is legally bound per country.
         if article.is_final_sale:
-            results.append(ArticleEligibility(
-                article=article,
-                returnable=False,
-                reason="Final sale items are not eligible for return.",
-                matched_rule="final_sale",
-            ))
-            continue
+            final_sale = rules.final_sale
+            if final_sale and order.country_code in final_sale.allowed_countries:
+                # TODO: Localize this message based on the user's locale or order locale if available
+                # For now, we will use the English message as a default - as the interface is just in English.
+                reason = final_sale.reason_text.get("en-US", "This item was marked as final sale and cannot be returned.")
+                results.append(ArticleEligibility(
+                    article=article,
+                    returnable=False,
+                    reason=reason,
+                    matched_rule="final_sale",
+                ))
+                continue
 
         if article.quantity_returned >= article.quantity:
             results.append(ArticleEligibility(
@@ -150,10 +156,13 @@ def evaluate_eligibility(order: Order) -> list[ArticleEligibility]:
         result = resolve_eligibility(article, order, rules)
 
         if not result.eligible:
+            blocked_rule = next((r for r in rules.block if r.id == result.final_rule_id), None)
+            reason = (blocked_rule.reason_text if blocked_rule and blocked_rule.reason_text
+                      else f"Blocked by rule: {result.final_rule_id}")
             results.append(ArticleEligibility(
                 article=article,
                 returnable=False,
-                reason=f"Blocked by rule: {result.final_rule_id}",
+                reason=reason,
                 matched_rule=result.final_rule_id,
             ))
             continue

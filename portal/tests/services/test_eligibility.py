@@ -46,6 +46,8 @@ def _make_order(
         zip="12345",
         street="Test Street 1",
         city="Testville",
+        country_code="US",
+        order_locale="en-US",
         order_date=datetime(2025, 12, 1, 10, 0),
         delivery_date=delivery_date or datetime(2025, 12, 5, 14, 0),
         articles=articles,
@@ -120,6 +122,33 @@ class TestReturnWindow:
             delivery_date=datetime.now() - timedelta(days=5),
             articles=[_make_article()],
         )
+        results = evaluate_eligibility(order)
+        assert results[0].returnable is True
+
+
+class TestFinalSale:
+    """Final sale items: blocked in allowed countries, fall through to normal
+    eligibility in countries where final sale has no legal standing."""
+
+    def test_final_sale_blocked_in_allowed_country(self) -> None:
+        """US is in final_sale.allowed_countries — return should be blocked."""
+        order = _make_order(
+            delivery_date=datetime.now() - timedelta(days=5),
+            articles=[_make_article(is_final_sale=True)],
+        )
+        order.country_code = "US"
+        results = evaluate_eligibility(order)
+        assert results[0].returnable is False
+        assert results[0].matched_rule == "final_sale"
+
+    def test_final_sale_allowed_in_non_listed_country(self) -> None:
+        """DE is not in final_sale.allowed_countries — legal minimum window
+        overrides, so the item should be returnable."""
+        order = _make_order(
+            delivery_date=datetime.now() - timedelta(days=5),
+            articles=[_make_article(is_final_sale=True)],
+        )
+        order.country_code = "DE"
         results = evaluate_eligibility(order)
         assert results[0].returnable is True
 

@@ -5,20 +5,48 @@
     {
         "id": "merchant_123:block:hygiene",
         "match": { "category": "hygiene" },
-        "reason": "merchant_policy_final_sale"
+        "reason": "merchant_policy_hygiene",
+        "reason_text": {
+            "en-US": "Hygiene products cannot be returned once opened.",
+            "de-DE": "Hygieneartikel können nach dem Öffnen nicht zurückgegeben werden.",
+            "fr-FR": "Les produits d'hygiène ne peuvent pas être retournés une fois ouverts.",
+            "ro-RO": "Produsele de igienă nu pot fi returnate după deschidere."
+        }
     },
     {
         "id": "merchant_123:block:gift_cards",
         "match": { "category": "gift_cards" },
-        "reason": "merchant_policy_non_returnable"
+        "reason": "merchant_policy_gift_cards",
+        "reason_text": {
+            "en-US": "Gift cards are not eligible for return.",
+            "de-DE": "Geschenkkarten können nicht zurückgegeben werden.",
+            "fr-FR": "Les cartes-cadeaux ne sont pas éligibles au retour.",
+            "ro-RO": "Cardurile cadou nu pot fi returnate."
+        }
     },
     {
         "id": "legal:DE:block:custom_made",
         "match": { "countries": ["DE"], "category": "custom_made" },
         "reason": "legal_exemption",
-        "source": "BGB §312g"
+        "source": "BGB §312g",
+        "reason_text": {
+            "en-US": "Custom-made items are excluded from returns by law (BGB §312g).",
+            "de-DE": "Maßgefertigte Artikel sind gesetzlich vom Widerrufsrecht ausgeschlossen (BGB §312g).",
+            "fr-FR": "Les articles sur mesure sont exclus du droit de retour par la loi (BGB §312g).",
+            "ro-RO": "Produsele personalizate sunt excluse de la returnare conform legii (BGB §312g)."
+        }
     }
   ],
+
+  "final_sale": {
+    "description": "Items marked as final sale. Returns are only accepted where local law overrides the merchant's final-sale policy; in those countries the legal minimum return window applies.",
+    "allowed_countries": ["US", "UK", "CA", "AU"],
+    "reason_text": {
+        "en-US": "This item was marked as final sale and cannot be returned.",
+        "fr-FR": "Cet article a été marqué comme vente finale et ne peut pas être retourné.",
+        "ro-RO": "Acest produs a fost marcat ca vânzare finală și nu poate fi returnat."
+    }
+  },
 
   "base_window": [
     {

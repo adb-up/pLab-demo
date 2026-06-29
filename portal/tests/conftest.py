@@ -15,6 +15,8 @@ def _make_raw_order(**overrides: object) -> dict[str, object]:
         "email": "test@example.com",
         "recipient": "Test User",
         "zip": "12345",
+        "country_code": "US",
+        "order_locale": "en-US",
         "street": "Test Street 1",
         "city": "Testville",
         "order_date": "2025-12-01T10:00:00Z",
@@ -57,6 +59,8 @@ def raw_order_1001() -> RawOrder:
         recipient="Jane Doe",
         street="Luisenstrasse 12",
         city="Berlin",
+        country_code="DE",
+        order_locale="de-DE",
         fulfillments=[
             {
                 "tracking_number": "1Z999AA10123456784",
@@ -103,6 +107,8 @@ def raw_order_1002() -> RawOrder:
         recipient="Max Mustermann",
         street="Kapellenweg 6",
         city="München",
+        country_code="DE",
+        order_locale="de-DE",
         order_date="2025-10-01T10:00:00Z",
         fulfillments=[
             {
@@ -148,6 +154,8 @@ def raw_order_1003() -> RawOrder:
         recipient="Sam Rivera",
         street="Via Roma 42",
         city="Milano",
+        country_code="IT",
+        order_locale="it-IT",
         order_date="2026-02-08T09:00:00Z",
         fulfillments=[],
         articles=[

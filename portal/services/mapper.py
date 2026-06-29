@@ -10,6 +10,7 @@ from portal.types import (
     EligibilityRule,
     EligibilityRuleBlock,
     EligibilityRuleLegal,
+    FinalSaleRule,
     Order,
 )
 
@@ -89,6 +90,7 @@ def map_order(raw: dict[str, Any]) -> Order:
 
     order_date_raw = _as_str(raw.get("order_date"))
     order_date = _parse_dt(order_date_raw)
+    country_code = _as_str(raw.get("order_country")) or _as_str(customer.get("country_code"))
 
     articles: list[Article] = []
 
@@ -128,6 +130,8 @@ def map_order(raw: dict[str, Any]) -> Order:
         zip=zip_code,
         street=street,
         city=city,
+        country_code=country_code,
+        order_locale=_as_str(raw.get("order_locale")),
         order_date=order_date,
         delivery_date=delivery_date or order_date,
         articles=articles,
@@ -138,8 +142,16 @@ def map_block_rule(raw: dict[str, Any]) -> EligibilityRuleBlock:
     return EligibilityRuleBlock(
         id=raw["id"],
         reason=raw["reason"],
+        reason_text=_as_str(raw.get("reason_text", "")),
         source=raw.get("source", ""),
         match=raw.get("match", {}),
+    )
+
+
+def map_final_sale_rule(raw: dict[str, Any]) -> FinalSaleRule:
+    return FinalSaleRule(
+        allowed_countries=raw.get("allowed_countries", []),
+        reason_text=raw.get("reason_text", {}),
     )
 
 

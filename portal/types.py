@@ -31,6 +31,8 @@ class Order:
     zip: str
     street: str
     city: str
+    country_code: str
+    order_locale: str
     order_date: datetime
     delivery_date: datetime
     articles: list[Article] = field(default_factory=list)
@@ -59,6 +61,7 @@ class EligibilityRuleBlock:
 
     id: str
     reason: str
+    reason_text: str = ""
     source: str = ""
     match: dict[str, str] = field(default_factory=dict)
 
@@ -92,6 +95,11 @@ class EligibilityRuleLoyaltyTier:
     match: dict[str, str] = field(default_factory=dict)
 
 @dataclass
+class FinalSaleRule:
+    allowed_countries: list[str] = field(default_factory=list)
+    reason_text: dict[str, str] = field(default_factory=dict)
+
+@dataclass
 class EligibilityResult:
     eligible: bool
     resolved_return_window_days: int
@@ -105,4 +113,5 @@ class EligibilityRules:
     allow: list[EligibilityRule] = field(default_factory=list)
     legal: list[EligibilityRuleLegal] = field(default_factory=list)
     loyalty_tiers: list[EligibilityRule] = field(default_factory=list)
+    final_sale: FinalSaleRule | None = None
     
